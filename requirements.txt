@@ -1,0 +1,15 @@
+# Core Framework
+flask
+markdown
+
+# The unified Google Generative AI SDK (for Gemini)
+google-genai
+
+# For handling environment variables
+python-dotenv
+
+# For downloading YouTube video information/transcripts
+pytube
+
+# Google authentication library
+google-auth

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.venv/
+
+# Environment variables
+.env
+
+# Secret Keys and sensitive files
+service-account-key.json
+*.json
+
+# IDE and OS specific
+.idea/
+.vscode/
+.DS_Store

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal Study Buddy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Multimodal Study Buddy</h1>
+        <p>Provide a YouTube link and a PDF chapter to generate a consolidated study guide.</p>
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="youtube_url">YouTube Video URL:</label>
+                <input type="url" id="youtube_url" name="youtube_url" required>
+            </div>
+            <div class="form-group">
+                <label for="pdf_file">PDF File:</label>
+                <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required>
+            </div>
+            <button type="submit">Generate Guide</button>
+        </form>
+    </div>
+</body>
+</html>
