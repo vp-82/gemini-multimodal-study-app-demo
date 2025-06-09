@@ -3,7 +3,7 @@ flask
 markdown
 
 # The unified Google Generative AI SDK (for Gemini)
-google-genai
+google-cloud-aiplatform
 
 # For handling environment variables
 python-dotenv
