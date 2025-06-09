@@ -4,29 +4,19 @@ study guides based on YouTube videos and PDF documents.
 It includes functions for uploading files to Gemini and generating content
 using a multimodal approach.
 """
-from google import genai
-from google.genai.types import (
-    HarmCategory,
-    HarmBlockThreshold,
+from google.cloud import aiplatform
+import vertexai
+from vertexai.generative_models import (
+    GenerativeModel,
     Part,
     Blob,
-    GenerateContentConfig,
     SafetySetting,
+    HarmCategory,
+    HarmBlockThreshold,
+    GenerationConfig,
 )
 import config
 import os
-
-
-def upload_to_gemini(path, mime_type=None):
-    """
-    Uploads a file to Gemini's File API using the correct method.
-    """
-    # This is the correct top-level function to upload a file from a path.
-    file = genai.upload_file(
-        path=path, display_name=os.path.basename(path), mime_type=mime_type
-    )
-    # print(f"Uploaded file '{file.display_name}' as: {file.uri}") # Debug print
-    return file
 
 
 def generate_study_guide(youtube_url, pdf_file_storage):
@@ -47,19 +37,20 @@ def generate_study_guide(youtube_url, pdf_file_storage):
     # print("AI Handler: Firing up the model with the correct Vertex AI client...") # Debug print
 
     try:
-        # Initialize the Vertex AI client with project and location from config
-        client = genai.Client(
-            vertexai=True, project=config.PROJECT_ID, location=config.LOCATION
-        )
+        # Initialize Vertex AI
+        aiplatform.init(project=config.PROJECT_ID, location=config.LOCATION)
+
+        # Instantiate the generative model
+        model = GenerativeModel(config.MODEL_ID)
 
         # Prepare the PDF part for the multimodal prompt
         # print(f"AI Handler: Reading PDF content for '{pdf_file_storage.filename}'...") # Debug print
         pdf_bytes = pdf_file_storage.read()
-        pdf_part = Part(inline_data=Blob(mime_type="application/pdf", data=pdf_bytes))
+        pdf_part = Part.from_data(data=pdf_bytes, mime_type="application/pdf") # Corrected Part creation
 
         # Prepare the video part for the multimodal prompt from the YouTube URL
         # print(f"AI Handler: Creating video part for URL: {youtube_url}...") # Debug print
-        video_part = Part.from_uri(file_uri=youtube_url, mime_type="video/mp4")
+        video_part = Part.from_uri(uri=youtube_url, mime_type="video/mp4") # Updated Part creation, parameter name is 'uri'
 
         # Construct the prompt parts, including instructions and file data
         prompt_parts = [
@@ -75,7 +66,7 @@ def generate_study_guide(youtube_url, pdf_file_storage):
 
         # Configure generation parameters, including safety settings
         # These settings are permissive; adjust as needed for content filtering.
-        generation_config = GenerateContentConfig(
+        generation_config = GenerationConfig( # Changed from GenerateContentConfig
             safety_settings=[
                 SafetySetting(
                     category=HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -103,10 +94,9 @@ def generate_study_guide(youtube_url, pdf_file_storage):
         #     f"AI Handler: Calling the Gemini model ({config.MODEL_ID}) via direct generate_content..." # Debug print
         # )
 
-        response = client.models.generate_content(
-            model=config.MODEL_ID,  # The specific Gemini model to use
+        response = model.generate_content( # Changed client.models.generate_content to model.generate_content
             contents=prompt_parts,  # The multimodal content for the prompt
-            config=generation_config,  # Configuration for generation and safety
+            generation_config=generation_config,  # Configuration for generation and safety
         )
 
         # print("AI Handler: Successfully received response from Gemini.") # Debug print
