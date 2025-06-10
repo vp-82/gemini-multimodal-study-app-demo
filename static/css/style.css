@@ -1,6 +1,7 @@
 /* General body styles */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* Modern system font stack */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, /* Modern system font stack */
+                 Helvetica, Arial, sans-serif;
     background-color: #f4f7f6; /* Light grey background */
     color: #333; /* Dark grey text color for readability */
     line-height: 1.6; /* Spacing between lines of text */
@@ -36,7 +37,8 @@ label {
 }
 
 /* Input field styling for URL and file inputs */
-input[type="url"], input[type="file"] {
+input[type="url"],
+input[type="file"] {
     width: 100%; /* Make inputs take up the full width of their container */
     padding: 10px; /* Padding inside input fields */
     border: 1px solid #ccc; /* Light grey border */
@@ -68,5 +70,6 @@ button:hover {
     border: 1px solid #bdc3c7; /* Grey border around the content */
     padding: 20px; /* Padding inside the content block */
     border-radius: 4px; /* Rounded corners for the content block */
-    white-space: pre-wrap; /* Allows text to wrap and preserves whitespace */
+    /* Allows text to wrap and preserves whitespace */
+    white-space: pre-wrap;
 }
