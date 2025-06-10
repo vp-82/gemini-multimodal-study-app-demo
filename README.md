@@ -2,7 +2,11 @@
 
 ## Overview
 
-The Multimodal Study Buddy is a web application that helps users generate study guides from YouTube video lectures and PDF documents. Users can input a YouTube URL and upload a PDF, and the application will use a multimodal AI model (Google's Gemini) to synthesize information from both sources and produce a comprehensive study guide in Markdown format.
+The Multimodal Study Buddy is a web application that helps users generate study
+guides from YouTube video lectures and PDF documents. Users can input a YouTube
+URL and upload a PDF, and the application will use a multimodal AI model
+(Google's Gemini) to synthesize information from both sources and produce a
+comprehensive study guide in Markdown format.
 
 ## Prerequisites
 
@@ -37,7 +41,9 @@ The Multimodal Study Buddy is a web application that helps users generate study 
     GOOGLE_PROJECT_ID="your-google-cloud-project-id"
     GOOGLE_LOCATION="your-google-cloud-region" # e.g., us-central1
     ```
-    Replace `"your-google-cloud-project-id"` and `"your-google-cloud-region"` with your actual Google Cloud project ID and location/region. The location should be one where Vertex AI and the Gemini models are available.
+    Replace `"your-google-cloud-project-id"` and `"your-google-cloud-region"`
+    with your actual Google Cloud project ID and location/region. The location
+    should be one where Vertex AI and the Gemini models are available.
 
 ## Running the Application
 
@@ -57,16 +63,22 @@ The Multimodal Study Buddy is a web application that helps users generate study 
 
 The application uses Flask as its web framework. When a user submits a YouTube URL and a PDF file:
 1.  The backend receives the inputs.
-2.  The `ai_services.multimodal_handler` module prepares the data and sends it to the Gemini multimodal model via the Vertex AI API.
-3.  The AI model processes the video content (from the URL) and the PDF document.
+2.  The `ai_services.multimodal_handler` module prepares the data and sends it
+    to the Gemini multimodal model via the Vertex AI API.
+3.  The AI model processes the video content (from the URL) and the PDF
+    document.
 4.  It generates a study guide in Markdown.
-5.  The Flask app converts the Markdown to HTML and displays it on the results page.
+5.  The Flask app converts the Markdown to HTML and displays it on the results
+    page.
 
 ## Key Files
 
--   `app.py`: Main Flask application file, handles routing and request processing.
--   `config.py`: Loads configuration settings, including Google Cloud project details.
--   `ai_services/multimodal_handler.py`: Contains the logic for interacting with the Gemini AI model.
+-   `app.py`: Main Flask application file, handles routing and request
+    processing.
+-   `config.py`: Loads configuration settings, including Google Cloud project
+    details.
+-   `ai_services/multimodal_handler.py`: Contains the logic for interacting
+    with the Gemini AI model.
 -   `templates/`: HTML templates for the web interface.
     -   `index.html`: The main page with the input form.
     -   `results.html`: The page that displays the generated study guide.

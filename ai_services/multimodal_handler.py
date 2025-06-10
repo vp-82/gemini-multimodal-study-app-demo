@@ -1,6 +1,6 @@
 """
-This module handles interactions with the Google Gemini AI model to generate
-study guides based on YouTube videos and PDF documents.
+This module handles interactions with the Google Gemini AI model
+to generate study guides based on YouTube videos and PDF documents.
 It includes functions for uploading files to Gemini and generating content
 using a multimodal approach.
 """
@@ -42,13 +42,13 @@ def generate_study_guide(youtube_url, pdf_file_storage):
              if generation fails.
     """
     if not gcp_client:
-        return """# An Error Occurred
-                Sorry, the AI service client is not initialized. Please check server logs."""
+        return (
+            "# An Error Occurred\n"
+            "Sorry, the AI service client is not initialized. "
+            "Please check server logs."
+        )
 
     try:
-
-        # model = GenerativeModel(model_name=config.MODEL_ID)
-
         # Prepare the PDF part for the multimodal prompt
         pdf_bytes = pdf_file_storage.read()
         pdf_part = Part.from_bytes(data=pdf_bytes, mime_type="application/pdf")
@@ -58,57 +58,59 @@ def generate_study_guide(youtube_url, pdf_file_storage):
         # Construct the prompt parts, including instructions and file data
         prompt_parts = [
             "You are an expert academic assistant.",
-            "Please analyze the content of the provided YouTube video lecture and the attached PDF document.",
-            "Create a comprehensive, well-structured study guide in Markdown format that synthesizes the key concepts, definitions, and examples from both sources.",
-            "Your guide should have a clear structure with headings and bullet points.",
+            "Please analyze the content of the provided YouTube video lecture "
+            "and the attached PDF document.",
+            "Create a comprehensive, well-structured study guide in Markdown "
+            "format that synthesizes the key concepts, definitions, and "
+            "examples from both sources.",
+            "Your guide should have a clear structure with headings and bullet "
+            "points.",
             "Here is the PDF document:",
             pdf_part,
             "And here is the video:",
             video_part,
         ]
 
-        # Configure generation parameters, including safety settings
-        # These settings are permissive; adjust as needed for content filtering.
-        generation_config = GenerateContentConfig(
-            safety_settings=[
-                SafetySetting(
-                    category=HarmCategory.HARM_CATEGORY_HARASSMENT,
-                    threshold=HarmBlockThreshold.BLOCK_NONE,
-                ),
-                SafetySetting(
-                    category=HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                    threshold=HarmBlockThreshold.BLOCK_NONE,
-                ),
-                SafetySetting(
-                    category=HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                    threshold=HarmBlockThreshold.BLOCK_NONE,
-                ),
-                SafetySetting(
-                    category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                    threshold=HarmBlockThreshold.BLOCK_NONE,  # type: ignore
-                ),
-            ]
-        )
+        # Configure generation parameters, including safety settings.
+        # These settings are permissive; adjust as needed for content
+        # filtering.
+        safety_settings = [
+            SafetySetting(
+                category=HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold=HarmBlockThreshold.BLOCK_NONE,
+            ),
+            SafetySetting(
+                category=HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold=HarmBlockThreshold.BLOCK_NONE,
+            ),
+            SafetySetting(
+                category=HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                threshold=HarmBlockThreshold.BLOCK_NONE,
+            ),
+            SafetySetting(
+                category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                threshold=HarmBlockThreshold.BLOCK_NONE,  # type: ignore
+            ),
+        ]
+        generation_config = GenerateContentConfig(safety_settings=safety_settings)
 
-        # Call the Gemini model to generate content
+        # Call the Gemini model to generate content.
         # Uses the specified model ID from config and sends the prompt parts
         # and generation configuration.
-        # print(
-        #     f"AI Handler: Calling the Gemini model ({config.MODEL_ID}) via direct generate_content..." # Debug print
-        # )
-
-        response = gcp_client.models.generate_content(  # Changed client.models.generate_content to model.generate_content
-            model=config.MODEL_ID,  # The model ID
-            contents=prompt_parts,  # The multimodal content for the prompt
-            config=generation_config,  # Configuration for generation and safety
+        response = gcp_client.models.generate_content(
+            model=config.MODEL_ID,
+            contents=prompt_parts,
+            config=generation_config,
         )
 
-        # print("AI Handler: Successfully received response from Gemini.") # Debug print
-
-        # Return the text part of the model's response
         return response.text
 
     except Exception as e:
-        # print(f"AI Handler: An error occurred: {e}") # Debug print for server log
         # Return a user-friendly error message in Markdown format
-        return f"# An Error Occurred\n\nSorry, there was a problem generating the study guide. Please check the console for more details.\n\n**Error:**\n`{e}`"
+        error_message = (
+            "# An Error Occurred\n\n"
+            "Sorry, there was a problem generating the study guide. "
+            "Please check the console for more details.\n\n"
+            f"**Error:**\n`{e}`"
+        )
+        return error_message
