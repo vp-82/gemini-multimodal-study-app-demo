@@ -1,6 +1,8 @@
 """
 This module handles interactions with the Google Gemini AI model
 to generate study guides based on YouTube videos and PDF documents.
+This module handles interactions with the Google Gemini AI model
+to generate study guides based on YouTube videos and PDF documents.
 It includes functions for uploading files to Gemini and generating content
 using a multimodal approach.
 """
@@ -75,6 +77,13 @@ def generate_study_guide(youtube_url, pdf_file_storage):
             "examples from both sources.",
             "Your guide should have a clear structure with headings and bullet "
             "points.",
+            "Please analyze the content of the provided YouTube video lecture "
+            "and the attached PDF document.",
+            "Create a comprehensive, well-structured study guide in Markdown "
+            "format that synthesizes the key concepts, definitions, and "
+            "examples from both sources.",
+            "Your guide should have a clear structure with headings and bullet "
+            "points.",
             "Here is the PDF document:",
             pdf_part,
             "And here is the video:",
@@ -103,7 +112,30 @@ def generate_study_guide(youtube_url, pdf_file_storage):
             ),
         ]
         generation_config = GenerateContentConfig(safety_settings=safety_settings)
+        # Configure generation parameters, including safety settings.
+        # These settings are permissive; adjust as needed for content
+        # filtering.
+        safety_settings = [
+            SafetySetting(
+                category=HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold=HarmBlockThreshold.BLOCK_NONE,
+            ),
+            SafetySetting(
+                category=HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold=HarmBlockThreshold.BLOCK_NONE,
+            ),
+            SafetySetting(
+                category=HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                threshold=HarmBlockThreshold.BLOCK_NONE,
+            ),
+            SafetySetting(
+                category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                threshold=HarmBlockThreshold.BLOCK_NONE,  # type: ignore
+            ),
+        ]
+        generation_config = GenerateContentConfig(safety_settings=safety_settings)
 
+        # Call the Gemini model to generate content.
         # Call the Gemini model to generate content.
         # Uses the specified model ID from config and sends the prompt parts
         # and generation configuration.
@@ -120,6 +152,13 @@ def generate_study_guide(youtube_url, pdf_file_storage):
     except Exception as e:
         logger.error(f"Error generating study guide: {e}")
         # Return a user-friendly error message in Markdown format
+        error_message = (
+            "# An Error Occurred\n\n"
+            "Sorry, there was a problem generating the study guide. "
+            "Please check the console for more details.\n\n"
+            f"**Error:**\n`{e}`"
+        )
+        return error_message
         error_message = (
             "# An Error Occurred\n\n"
             "Sorry, there was a problem generating the study guide. "
