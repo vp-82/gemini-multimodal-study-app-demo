@@ -4,18 +4,26 @@ study guides based on YouTube videos and PDF documents.
 It includes functions for uploading files to Gemini and generating content
 using a multimodal approach.
 """
-from google.cloud import aiplatform
-import vertexai
-from vertexai.generative_models import (
-    GenerativeModel,
+
+from google import genai
+from google.genai.types import (
     Part,
     SafetySetting,
     HarmCategory,
     HarmBlockThreshold,
-    GenerationConfig,
+    GenerateContentConfig,
 )
 import config
-import os
+
+try:
+    gcp_client = genai.Client(
+        vertexai=True, project=config.PROJECT_ID, location=config.LOCATION
+    )
+except Exception as e:
+    print(f"Error initializing Google GenAI Client for Vertex AI: {e}")
+    # Handle client initialization failure (e.g., exit, log critical error)
+    # For a Flask app, this might be done once when the app starts.
+    gcp_client = None
 
 
 def generate_study_guide(youtube_url, pdf_file_storage):
@@ -33,23 +41,19 @@ def generate_study_guide(youtube_url, pdf_file_storage):
         str: The generated study guide in Markdown format, or an error message
              if generation fails.
     """
-    # print("AI Handler: Firing up the model with the correct Vertex AI client...") # Debug print
+    if not gcp_client:
+        return """# An Error Occurred
+                Sorry, the AI service client is not initialized. Please check server logs."""
 
     try:
-        # Initialize Vertex AI
-        aiplatform.init(project=config.PROJECT_ID, location=config.LOCATION)
 
-        # Instantiate the generative model
-        model = GenerativeModel(config.MODEL_ID)
+        # model = GenerativeModel(model_name=config.MODEL_ID)
 
         # Prepare the PDF part for the multimodal prompt
-        # print(f"AI Handler: Reading PDF content for '{pdf_file_storage.filename}'...") # Debug print
         pdf_bytes = pdf_file_storage.read()
-        pdf_part = Part.from_data(data=pdf_bytes, mime_type="application/pdf") # Corrected Part creation
+        pdf_part = Part.from_bytes(data=pdf_bytes, mime_type="application/pdf")
 
-        # Prepare the video part for the multimodal prompt from the YouTube URL
-        # print(f"AI Handler: Creating video part for URL: {youtube_url}...") # Debug print
-        video_part = Part.from_uri(uri=youtube_url, mime_type="video/mp4") # Updated Part creation, parameter name is 'uri'
+        video_part = Part.from_uri(file_uri=youtube_url, mime_type="video/mp4")
 
         # Construct the prompt parts, including instructions and file data
         prompt_parts = [
@@ -65,7 +69,7 @@ def generate_study_guide(youtube_url, pdf_file_storage):
 
         # Configure generation parameters, including safety settings
         # These settings are permissive; adjust as needed for content filtering.
-        generation_config = GenerationConfig( # Changed from GenerateContentConfig
+        generation_config = GenerateContentConfig(
             safety_settings=[
                 SafetySetting(
                     category=HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -81,7 +85,7 @@ def generate_study_guide(youtube_url, pdf_file_storage):
                 ),
                 SafetySetting(
                     category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                    threshold=HarmBlockThreshold.BLOCK_NONE,
+                    threshold=HarmBlockThreshold.BLOCK_NONE,  # type: ignore
                 ),
             ]
         )
@@ -93,9 +97,10 @@ def generate_study_guide(youtube_url, pdf_file_storage):
         #     f"AI Handler: Calling the Gemini model ({config.MODEL_ID}) via direct generate_content..." # Debug print
         # )
 
-        response = model.generate_content( # Changed client.models.generate_content to model.generate_content
+        response = gcp_client.models.generate_content(  # Changed client.models.generate_content to model.generate_content
+            model=config.MODEL_ID,  # The model ID
             contents=prompt_parts,  # The multimodal content for the prompt
-            generation_config=generation_config,  # Configuration for generation and safety
+            config=generation_config,  # Configuration for generation and safety
         )
 
         # print("AI Handler: Successfully received response from Gemini.") # Debug print
