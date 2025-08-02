@@ -63,15 +63,13 @@ def generate_study_guide(youtube_url, pdf_file_storage):
         video_part = Part.from_uri(file_uri=youtube_url, mime_type="video/mp4")
 
         logger.info("Preparing prompt parts...")
+
+        # Load the system prompt from the dedicated text file
+        with open("prompts/system_prompt.txt", "r") as f:
+            system_prompt = f.read()
+
         prompt_parts = [
-            "You are an expert academic assistant.",
-            "Please analyze the content of the provided YouTube video lecture "
-            "and the attached PDF document.",
-            "Create a comprehensive, well-structured study guide in Markdown "
-            "format that synthesizes the key concepts, definitions, and "
-            "examples from both sources.",
-            "Your guide should have a clear structure with headings and bullet "
-            "points.",
+            system_prompt,
             "Here is the PDF document:",
             pdf_part,
             "And here is the video:",
