@@ -1,5 +1,13 @@
+"""Application configuration.
+
+This module loads configuration settings from a .env file or environment
+variables. It is used to configure the Google Cloud project, location, and
+the Gemini model ID.
+"""
 import os
+
 from dotenv import load_dotenv
+
 
 # Load environment variables from .env file
 load_dotenv()

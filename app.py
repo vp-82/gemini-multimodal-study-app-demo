@@ -1,10 +1,15 @@
+"""Main Flask application file.
+
+This file contains the main Flask application and routing. It handles the web
+interface for the Multimodal Study Buddy, processing user inputs and
+displaying the generated study guide.
+"""
 import logging
+
+import markdown
 from flask import Flask, render_template, request
 
 import config
-import markdown  # Import the new library
-
-# Import our AI handler function
 from ai_services.multimodal_handler import generate_study_guide
 
 # Configure logging
@@ -19,9 +24,17 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 
-# Route for the main page
 @app.route("/", methods=["GET", "POST"])
 def index():
+    """Handles the main page and form submission.
+
+    For GET requests, it renders the main page with the input form.
+    For POST requests, it processes the YouTube URL and PDF file,
+    generates a study guide, and displays it on the results page.
+
+    Returns:
+        A rendered HTML template or an error message with a status code.
+    """
     # Handle POST request when form is submitted
     if request.method == "POST":
         logger.info("Received POST request to generate study guide")
