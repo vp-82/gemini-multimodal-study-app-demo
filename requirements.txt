@@ -13,3 +13,6 @@ pytube
 
 # Google authentication library
 google-auth
+
+# Pin urllib3 to a version compatible with the system's OpenSSL
+urllib3<2.0

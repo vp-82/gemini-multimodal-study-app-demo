@@ -52,14 +52,18 @@ def index():
         logger.info(f"YouTube URL: {youtube_url}, PDF File: {pdf_file.filename}")
 
         # Generate study guide using AI handler
-        generated_markdown = generate_study_guide(youtube_url, pdf_file)
+        generated_markdown, system_prompt = generate_study_guide(youtube_url, pdf_file)
 
         # Convert markdown to HTML
         generated_html = markdown.markdown(generated_markdown)
 
         # Render results page with generated HTML
         logger.info("Successfully generated study guide and rendered results page")
-        return render_template("results.html", content_html=generated_html)
+        return render_template(
+            "results.html",
+            content_html=generated_html,
+            system_prompt=system_prompt,
+        )
 
     # Render main page for GET request
     logger.info("Received GET request for main page")

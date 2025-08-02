@@ -20,4 +20,4 @@ LOCATION = os.getenv("GOOGLE_LOCATION", "global")
 
 # Gemini Model Settings
 # Model ID for the Gemini API
-MODEL_ID = "gemini-2.5-pro-preview-06-05"
+MODEL_ID = "gemini-2.5-pro"

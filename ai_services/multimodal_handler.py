@@ -104,14 +104,17 @@ def generate_study_guide(youtube_url, pdf_file_storage):
         )
         logger.info("Successfully received response from Gemini model.")
 
-        return response.text
+        return response.text, system_prompt
 
     except Exception as e:
         logger.error("Error generating study guide: %s", e)
         error_message = (
-            "# An Error Occurred\n\n"  # Corrected newline escaping
+            "# An Error Occurred\n\n"
             "Sorry, there was a problem generating the study guide. "
             "Please check the console for more details.\n\n"
             f"**Error:**\n`{e}`"
         )
-        return error_message
+        # Return the error message and the prompt that caused it
+        with open("prompts/system_prompt.txt", "r") as f:
+            system_prompt = f.read()
+        return error_message, system_prompt

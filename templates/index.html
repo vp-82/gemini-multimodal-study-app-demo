@@ -17,7 +17,7 @@
         <p>Provide a YouTube link and a PDF chapter to generate a consolidated study guide.</p>
 
         <!-- Form for submitting YouTube URL and PDF file -->
-        <form action="/" method="POST" enctype="multipart/form-data">
+        <form action="/" method="POST" enctype="multipart/form-data" id="guide-form">
             <!-- Input field for YouTube URL -->
             <div class="form-group">
                 <label for="youtube_url">YouTube Video URL:</label>
@@ -31,6 +31,18 @@
             <!-- Submit button -->
             <button type="submit">Generate Guide</button>
         </form>
+
+        <!-- Hidden loading indicator -->
+        <div id="loading-indicator" class="hidden">
+            <p>Generating your study guide... This may take a moment.</p>
+        </div>
     </div>
+
+    <!-- JavaScript to show the loading indicator on form submission -->
+    <script>
+        document.getElementById('guide-form').addEventListener('submit', function() {
+            document.getElementById('loading-indicator').classList.remove('hidden');
+        });
+    </script>
 </body>
 </html>

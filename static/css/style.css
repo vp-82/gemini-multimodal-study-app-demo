@@ -66,10 +66,42 @@ button:hover {
 
 /* Styling for the container of Markdown-generated HTML content */
 .markdown-content {
-    background: #ecf0f1; /* Light grey background for content block */
-    border: 1px solid #bdc3c7; /* Grey border around the content */
-    padding: 20px; /* Padding inside the content block */
-    border-radius: 4px; /* Rounded corners for the content block */
-    /* Allows text to wrap and preserves whitespace */
-    white-space: pre-wrap;
+    background: #fdfdfd;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+/* FIX: Ensure lists inside the markdown content are rendered correctly */
+.markdown-content ul, .markdown-content ol {
+    padding-left: 20px; /* Standard indentation for lists */
+}
+
+.markdown-content li {
+    margin-bottom: 10px; /* Space between list items */
+}
+
+/* Styling for the prompt display box */
+.prompt-display {
+    background-color: #e8f4f8;
+    border: 1px solid #bde0eb;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 20px;
+    white-space: pre-wrap; /* Preserve whitespace in the prompt */
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+}
+
+/* Utility class to hide elements */
+.hidden {
+    display: none;
+}
+
+/* Styling for the loading indicator */
+#loading-indicator {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #2c3e50;
 }

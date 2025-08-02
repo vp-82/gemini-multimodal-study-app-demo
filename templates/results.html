@@ -20,6 +20,13 @@
             {{ content_html|safe }}
         </div>
 
+        <!-- Display the prompt used to generate the content -->
+        <h2>Prompt Details</h2>
+        <p>The following prompt was used to generate this guide:</p>
+        <div class="prompt-display">
+            {{ system_prompt }}
+        </div>
+
         <!-- Link to go back to the main page -->
         <a href="{{ url_for('index') }}">Create another</a>
     </div>
