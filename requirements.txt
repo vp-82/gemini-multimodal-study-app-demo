@@ -1,6 +1,5 @@
 # Core Framework
-flask
-markdown
+gradio
 
 # The unified Google Generative AI SDK (for Gemini)
 google-genai

@@ -29,37 +29,36 @@ except Exception as e:
     gcp_client = None
 
 
-def generate_study_guide(youtube_url, pdf_file_storage):
-    """Generates a study guide from a YouTube video and a PDF file.
-
-    This function interacts with the Gemini AI model, sending it a YouTube URL
-    and a PDF file. It then returns a study guide in Markdown format.
+def generate_study_guide(youtube_url, pdf_content, pdf_filename):
+    """Generates a study guide from a YouTube video and PDF content.
 
     Args:
         youtube_url (str): The URL of the YouTube video.
-        pdf_file_storage (FileStorage): The PDF file object from the Flask
-            request.
+        pdf_content (bytes): The content of the PDF file.
+        pdf_filename (str): The original filename of the PDF.
 
     Returns:
-        str: The generated study guide in Markdown format, or a user-friendly
-             error message if generation fails.
+        tuple[str, str]: A tuple containing the generated study guide and the
+                         system prompt used.
     """
     logger.info(
         "generate_study_guide called with YouTube URL: %s and PDF: %s",
         youtube_url,
-        pdf_file_storage.filename,
+        pdf_filename,
     )
     if not gcp_client:
         logger.error("AI service client not initialized.")
+        # ... (rest of the function is similar)
+        with open("prompts/system_prompt.txt", "r") as f:
+            system_prompt = f.read()
         return (
-            "# An Error Occurred\n"  # Corrected newline escaping
+            "# An Error Occurred\n"
             "Sorry, the AI service client is not initialized. "
             "Please check server logs."
-        )
+        ), system_prompt
 
     try:
-        pdf_bytes = pdf_file_storage.read()
-        pdf_part = Part.from_bytes(data=pdf_bytes, mime_type="application/pdf")
+        pdf_part = Part.from_bytes(data=pdf_content, mime_type="application/pdf")
         video_part = Part.from_uri(file_uri=youtube_url, mime_type="video/mp4")
 
         logger.info("Preparing prompt parts...")
