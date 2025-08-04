@@ -3,6 +3,7 @@
 This module provides functions to generate study guides by sending multimodal
 (video and PDF) content to the Google Gemini model via the Vertex AI API.
 """
+
 import logging
 
 from google import genai
@@ -29,7 +30,7 @@ except Exception as e:
     gcp_client = None
 
 
-def generate_study_guide(youtube_url, pdf_content, pdf_filename):
+async def generate_study_guide(youtube_url, pdf_content, pdf_filename):
     """Generates a study guide from a YouTube video and PDF content.
 
     Args:
@@ -42,20 +43,14 @@ def generate_study_guide(youtube_url, pdf_content, pdf_filename):
                          system prompt used.
     """
     logger.info(
-        "generate_study_guide called with YouTube URL: %s and PDF: %s",
+        "Async generate_study_guide called with URL: %s and PDF: %s",
         youtube_url,
         pdf_filename,
     )
     if not gcp_client:
         logger.error("AI service client not initialized.")
-        # ... (rest of the function is similar)
-        with open("prompts/system_prompt.txt", "r") as f:
-            system_prompt = f.read()
-        return (
-            "# An Error Occurred\n"
-            "Sorry, the AI service client is not initialized. "
-            "Please check server logs."
-        ), system_prompt
+        yield "# An Error Occurred\nSorry, the AI service client is not initialized."
+        return
 
     try:
         pdf_part = Part.from_bytes(data=pdf_content, mime_type="application/pdf")
@@ -67,7 +62,7 @@ def generate_study_guide(youtube_url, pdf_content, pdf_filename):
         with open("prompts/system_prompt.txt", "r") as f:
             system_prompt = f.read()
 
-        prompt_parts = [
+        contents = [
             system_prompt,
             "Here is the PDF document:",
             pdf_part,
@@ -95,25 +90,18 @@ def generate_study_guide(youtube_url, pdf_content, pdf_filename):
         ]
         generation_config = GenerateContentConfig(safety_settings=safety_settings)
 
-        logger.info("Calling Gemini model (%s) to generate content...", config.MODEL_ID)
-        response = gcp_client.models.generate_content(
-            model=config.MODEL_ID,
-            contents=prompt_parts,
-            config=generation_config,
-        )
-        logger.info("Successfully received response from Gemini model.")
+        logger.info("Calling async generate_content_stream...")
 
-        return response.text, system_prompt
+        # Use the async client and 'async for'
+                response_stream = await gcp_client.aio.models.generate_content_stream(
+            model=config.MODEL_ID,
+            contents=contents,
+            generation_config=generation_config,
+        )
+
+        async for chunk in response_stream:
+            yield chunk.text
 
     except Exception as e:
-        logger.error("Error generating study guide: %s", e)
-        error_message = (
-            "# An Error Occurred\n\n"
-            "Sorry, there was a problem generating the study guide. "
-            "Please check the console for more details.\n\n"
-            f"**Error:**\n`{e}`"
-        )
-        # Return the error message and the prompt that caused it
-        with open("prompts/system_prompt.txt", "r") as f:
-            system_prompt = f.read()
-        return error_message, system_prompt
+        logger.error("Error in async generation: %s", e, exc_info=True)
+        yield f"# An Error Occurred\n\nSorry, there was a problem: {e}"

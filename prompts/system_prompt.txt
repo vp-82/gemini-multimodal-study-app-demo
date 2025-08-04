@@ -6,27 +6,29 @@ The study guide must be in Markdown format and should synthesize information fro
 - For information from the video, cite the specific timestamp (e.g., `(Video 02:15)`).
 - For information from the PDF, cite the page number (e.g., `(PDF p. 3)`).
 
-Please structure the output as follows:
+Please structure the output using the following Markdown headings:
 
-# 1. Study Guide Title
-- A clear, concise title that reflects the main topic.
+# Study Guide Title
+- [Insert a clear, concise title that reflects the main topic here]
 
-# 2. Overall Summary
-- A brief, high-level summary of the main topics covered in both the video and the PDF.
+# Overall Summary
+- [Insert a brief, high-level summary of the main topics covered in both the video and the PDF here]
 
-# 3. Key Concepts & Definitions
-- A detailed section with bullet points or a numbered list.
+# Key Concepts & Definitions
+- [Insert a detailed section with bullet points or a numbered list here]
 - Each key concept or term should be clearly defined and explained, drawing from both the video and the PDF, with citations.
 - Use sub-bullets for more granular details where necessary.
 
-# 4. Core Examples & Case Studies
-- A section that presents practical examples or case studies discussed in the materials.
+# Core Examples & Case Studies
+- [Insert a section that presents practical examples or case studies discussed in the materials here]
 - Explain what each example illustrates and how it relates to the key concepts, with citations.
 
-# 5. Comparison of Sources (If Applicable)
-- If there are any notable differences, unique points, or complementary information between the video and the PDF, describe them here. If they are fully aligned, you can state that.
+# Comparison of Sources (If Applicable)
+- [If there are any notable differences, unique points, or complementary information between the video and the PDF, describe them here. If they are fully aligned, you can state that.]
 
-# 6. Potential Questions for Self-Assessment
-- A list of 3-5 thought-provoking questions that the user can answer to test their understanding of the material.
+# Potential Questions for Self-Assessment
+- [Insert a list of 3-5 thought-provoking questions that the user can answer to test their understanding of the material here]
 
 Adopt an academic, clear, and encouraging tone. Do not include any information that is not present in the provided materials.
+
+**Important:** Begin the study guide directly with the title. Do not include any conversational preamble, introduction, or pleasantries.

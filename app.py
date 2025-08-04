@@ -11,35 +11,41 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
-def create_study_guide(youtube_url, pdf_file):
+async def create_study_guide_stream(youtube_url, pdf_file):
     """
-    The main function called by the Gradio interface to generate the study guide.
+    An async generator function that streams the study guide generation process.
 
     Args:
         youtube_url (str): The URL of the YouTube video.
         pdf_file (file): A file-like object for the uploaded PDF.
 
-    Returns:
-        str: The generated study guide in Markdown format.
+    Yields:
+        str: The accumulating study guide in Markdown format.
     """
     if not youtube_url or not pdf_file:
-        return "Error: Please provide both a YouTube URL and a PDF file."
+        yield "Error: Please provide both a YouTube URL and a PDF file."
+        return
 
-    logging.info(f"Generating guide for URL: {youtube_url} and PDF: {pdf_file.name}")
+    yield "Processing inputs and preparing to generate... Please wait."
+
+    logging.info(f"Streaming guide for URL: {youtube_url} and PDF: {pdf_file.name}")
 
     try:
-        # Read the content of the uploaded file
         with open(pdf_file.name, "rb") as f:
             pdf_content = f.read()
 
-        # Call the AI handler
-        markdown_guide, _ = generate_study_guide(
+        full_guide = ""
+        # Use 'async for' to iterate over the async generator
+        async for chunk in generate_study_guide(
             youtube_url, pdf_content, pdf_file.name
-        )
-        return markdown_guide
+        ):
+            full_guide += chunk
+            yield full_guide
+
     except Exception as e:
-        logging.error(f"An error occurred: {e}", exc_info=True)
-        return f"An unexpected error occurred. Please check the logs. Error: {e}"
+        logging.error(f"An error occurred during streaming: {e}", exc_info=True)
+        yield f"An unexpected error occurred. Please check the logs. Error: {e}"
+
 
 # --- Gradio Interface Definition ---
 with gr.Blocks() as demo:
@@ -54,11 +60,22 @@ with gr.Blocks() as demo:
 
     output_guide = gr.Markdown(label="Your AI-Generated Study Guide")
 
-    generate_button.click(
-        fn=create_study_guide,
+    # This event handles the streaming output
+    generate_event = generate_button.click(
+        fn=create_study_guide_stream,
         inputs=[youtube_url_input, pdf_file_input],
         outputs=output_guide,
     )
+
+    # This event chain handles the button UI updates
+    generate_event.then(
+        lambda: gr.update(value="Generating...", interactive=False),
+        outputs=generate_button,
+    ).then(
+        lambda: gr.update(value="Generate Guide", interactive=True),
+        outputs=generate_button,
+    )
+
 
 if __name__ == "__main__":
     demo.launch()
